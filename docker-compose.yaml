@@ -1,0 +1,45 @@
+version: '3'
+ 
+services:
+  # APPLICATION SECTION
+  app:
+    container_name: application
+    build:
+      context: ./django
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./django:/app
+      - ./data/app-media:/vol/web/media
+      - ./data/app-static:/vol/web/static
+    env_file:
+      - ./django/.env
+    depends_on:
+      - db
+      - redis
+
+  db:
+    container_name: database
+    hostname: database
+    domainname: database
+    build:
+        context: ./postgresql
+    volumes:
+      - ./postgresql:/app
+      - ./data/db-data:/var/lib/postgresql/data
+    ports:
+        - "5432:5432"
+    # logging:
+    #   driver: "none"
+
+  redis:
+    container_name: redis
+    hostname: redis
+    domainname: redis
+    image: redis:alpine
+    ports:
+        - "6379:6379"
+    volumes:
+      - ./data/redis-data:/data
+    # logging:
+    #   driver: "none"
